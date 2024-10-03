@@ -3,6 +3,24 @@ import {ApiError} from "../utils/ApiError.js"
 import {User} from "../models/user.model.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from '../utils/ApiResponse.js'
+
+const generateAcessAndrefereshTokens = async(userId)=>{
+ try {
+  const user  = await User.findById(userId)
+  const acessToken = user.gererateAcessToken()
+  const refreshToken = user.gererateRefreshToken()
+
+  user.refreshToken = refreshToken
+  await user.save({validateBeforeSave: false});
+
+  return {acessToken, refreshToken}
+  
+ } catch (error) {
+  throw new ApiError(500, "Something went while generating acess token")
+ }
+}
+
+
 const registerUser = asyncHandler(async (req, res) => {
    
   //get user details from frontend
@@ -75,5 +93,61 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 
+const loginUser = asyncHandler(async (req, res)=>{
+  //get user details from frontend - username, email and password
+  //check user  exist or not 
+  //if user exist then match the  password 
+  //Generate acess token and refresh  token and send it to the user
+  // Send cookie
 
-export {registerUser}
+  const {email, username, password} = req.body;
+  
+  if(!email || !username) 
+    throw new ApiError(400, "username or password is required")
+
+  const user = await User.findOne({
+    $or:{username, email}, 
+    })
+
+    if(!user ){
+      throw new ApiError(404, "User does not Exist")
+    }
+
+   const isPasswordValid =  await user.isPasswordCorrect(password)
+
+   if(!isPasswordValid ){
+    throw new ApiError(404, "Inavlid User Credentials")
+  }
+
+  const {acessToken, refreshToken} = await generateAcessAndrefereshTokens(user._id)
+
+  const loggedInUser = await User.findById(user._id).
+  select("-password -refreshToken")
+
+  const options = {
+    httpOnly: true,
+    secure: true
+  }
+ //cookie send to user
+  return res
+  .status(200)
+  .cookie("accessToken", acessToken, options)
+  .cookie("refreshToken", refreshToken, options)
+  .json(
+    new ApiResponse(200, {
+      user: loggedInUser, acessToken, refreshToken
+    },
+    "User Logged In SucessFully"
+  )
+  )
+
+})
+
+const logoutUser = asyncHandler(async(req, res)=>{
+   //clear cookies
+   
+
+})
+
+
+export {registerUser, loginUser}

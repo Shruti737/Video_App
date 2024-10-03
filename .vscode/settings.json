@@ -1,0 +1,17 @@
+{
+    "workbench.preferredDarkColorTheme": "Kimbie Dark",
+    "workbench.preferredHighContrastColorTheme": "Visual Studio Dark",
+    "diffEditor.diffAlgorithm": "advanced",
+    "workbench.colorCustomizations": {
+
+
+        "[Default Dark Modern]": {}
+    },
+    "workbench.colorTheme": "Monokai Dimmed",
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.semanticHighlighting.enabled": "configuredByTheme",
+    "terminal.integrated.minimumContrastRatio": 4.5,
+    "terminal.integrated.tabs.defaultColor": null,
+    "window.autoDetectColorScheme": false,
+    "workbench.editor.showIcons": true
+}

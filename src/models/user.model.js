@@ -89,6 +89,12 @@ userSchema.methods.gererateRefreshToken = function(){
     )
 }
 
+// Difference between acess token and refresh token
+
+// Acess Token -  Short Lived  and for every session end it genrate next token. and authentication of user checkend using the acess token
+
+// Refresh Token - Long Lived. It is Stored in database and database refresh token and user refresh token same it give next acess token  to user. user do not have to re login itself and follow the procedure.
+
 
 
 export const User = mongoose.model("User", userSchema)
